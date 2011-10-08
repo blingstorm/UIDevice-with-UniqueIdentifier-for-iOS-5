@@ -30,4 +30,7 @@
 
 - (NSString *) uniqueGlobalDeviceIdentifier;
 
+- (NSString *) uniqueDeviceIdentifierCreatedWithNoColonFormatMacaddress;
+
+
 @end

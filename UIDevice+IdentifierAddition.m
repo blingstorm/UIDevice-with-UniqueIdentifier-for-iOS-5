@@ -16,7 +16,7 @@
 
 @interface UIDevice(Private)
 
-- (NSString *) macaddress;
+- (NSString *)macaddressWithColon:(BOOL)withColon;
 
 @end
 
@@ -29,7 +29,7 @@
 // Return the local MAC addy
 // Courtesy of FreeBSD hackers email list
 // Accidentally munged during previous update. Fixed thanks to erica sadun & mlamb.
-- (NSString *) macaddress{
+- (NSString *) macaddressWithColon:(BOOL)withColon {
     
     int                 mib[6];
     size_t              len;
@@ -67,8 +67,14 @@
     ifm = (struct if_msghdr *)buf;
     sdl = (struct sockaddr_dl *)(ifm + 1);
     ptr = (unsigned char *)LLADDR(sdl);
-    NSString *outstring = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", 
-                           *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];
+    NSString *outstring;
+    if (withColon) {
+        outstring = [NSString stringWithFormat:@"%02X:%02X:%02X:%02X:%02X:%02X", 
+                     *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];
+    } else {
+        outstring = [NSString stringWithFormat:@"%02X%02X%02X%02X%02X%02X", 
+                     *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)];
+    }
     free(buf);
     
     return outstring;
@@ -79,7 +85,7 @@
 #pragma mark Public Methods
 
 - (NSString *) uniqueDeviceIdentifier{
-    NSString *macaddress = [[UIDevice currentDevice] macaddress];
+    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     
     NSString *stringToHash = [NSString stringWithFormat:@"%@%@",macaddress,bundleIdentifier];
@@ -89,8 +95,19 @@
 }
 
 - (NSString *) uniqueGlobalDeviceIdentifier{
-    NSString *macaddress = [[UIDevice currentDevice] macaddress];
+    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
     NSString *uniqueIdentifier = [macaddress stringFromMD5];
+    
+    return uniqueIdentifier;
+}
+
+#pragma mark -
+- (NSString *) uniqueDeviceIdentifierCreatedWithNoColonFormatMacaddress {
+    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:NO];
+    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+    
+    NSString *stringToHash = [NSString stringWithFormat:@"%@%@",macaddress,bundleIdentifier];
+    NSString *uniqueIdentifier = [stringToHash stringFromMD5];
     
     return uniqueIdentifier;
 }
