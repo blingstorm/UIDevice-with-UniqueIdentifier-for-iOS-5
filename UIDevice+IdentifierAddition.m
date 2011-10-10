@@ -43,7 +43,7 @@
     mib[2] = 0;
     mib[3] = AF_LINK;
     mib[4] = NET_RT_IFLIST;
-    
+    NSString *logString = nil;
     if ((mib[5] = if_nametoindex("en0")) == 0) {
         printf("Error: if_nametoindex error\n");
         return NULL;
