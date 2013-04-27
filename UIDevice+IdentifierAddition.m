@@ -101,6 +101,12 @@
     return uniqueIdentifier;
 }
 
+- (NSString *) uniqueDevice {
+    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
+    NSString *uniqueIdentifier = [[macaddress stringByReplacingOccurrencesOfString:@":" withString:@""] lowercaseString];
+    return uniqueIdentifier;
+}
+
 #pragma mark -
 - (NSString *) uniqueDeviceIdentifierCreatedWithNoColonFormatMacaddress {
     NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:NO];

@@ -32,5 +32,7 @@
 
 - (NSString *) uniqueDeviceIdentifierCreatedWithNoColonFormatMacaddress;
 
+- (NSString *) uniqueDevice;
+
 
 @end
