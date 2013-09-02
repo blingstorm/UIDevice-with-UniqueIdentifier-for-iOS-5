@@ -85,7 +85,8 @@
 #pragma mark Public Methods
 
 - (NSString *) uniqueDeviceIdentifier{
-    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
+//    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
+     NSString *macaddress = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     
     NSString *stringToHash = [NSString stringWithFormat:@"%@%@",macaddress,bundleIdentifier];
