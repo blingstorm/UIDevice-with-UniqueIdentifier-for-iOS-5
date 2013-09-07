@@ -14,6 +14,12 @@
 #include <net/if.h>
 #include <net/if_dl.h>
 
+#define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
+#define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
+
 @interface UIDevice(Private)
 
 - (NSString *)macaddressWithColon:(BOOL)withColon;
@@ -84,9 +90,15 @@
 #pragma mark -
 #pragma mark Public Methods
 
+- (NSString *) getUniqueDevice:(BOOL)colon {
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+        return [UIDevice currentDevice].identifierForVendor.UUIDString;
+    else
+        return [[UIDevice currentDevice] macaddressWithColon:colon];
+}
+
 - (NSString *) uniqueDeviceIdentifier{
-//    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
-     NSString *macaddress = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    NSString *macaddress = [self getUniqueDevice:YES];
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     
     NSString *stringToHash = [NSString stringWithFormat:@"%@%@",macaddress,bundleIdentifier];
@@ -96,21 +108,21 @@
 }
 
 - (NSString *) uniqueGlobalDeviceIdentifier{
-    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
+    NSString *macaddress = [self getUniqueDevice:YES];
     NSString *uniqueIdentifier = [macaddress stringFromMD5];
     
     return uniqueIdentifier;
 }
 
 - (NSString *) uniqueDevice {
-    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:YES];
+    NSString *macaddress = [self getUniqueDevice:YES];
     NSString *uniqueIdentifier = [[macaddress stringByReplacingOccurrencesOfString:@":" withString:@""] lowercaseString];
     return uniqueIdentifier;
 }
 
 #pragma mark -
 - (NSString *) uniqueDeviceIdentifierCreatedWithNoColonFormatMacaddress {
-    NSString *macaddress = [[UIDevice currentDevice] macaddressWithColon:NO];
+    NSString *macaddress = [self getUniqueDevice:NO];
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     
     NSString *stringToHash = [NSString stringWithFormat:@"%@%@",macaddress,bundleIdentifier];
