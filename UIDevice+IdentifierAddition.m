@@ -91,7 +91,8 @@
 #pragma mark Public Methods
 
 - (NSString *) getUniqueDevice:(BOOL)colon {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0"))
+    double version = [[UIDevice currentDevice].systemVersion doubleValue];
+    if (version >= 7)
         return [UIDevice currentDevice].identifierForVendor.UUIDString;
     else
         return [[UIDevice currentDevice] macaddressWithColon:colon];
